@@ -1,26 +1,50 @@
 package database
 
 import (
-	"DevBurger/models"
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
-
 func Connect() {
-	dsn := "host=localhost user=postgres password=postgres dbname=devburger port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	sslMode := os.Getenv("DB_SSLMODE") // exemplo: "disable"
 
-	if err != nil {
-		log.Fatal("Erro ao conectar no banco: ", err)
+	if dbUser == "" || dbPassword == "" || dbHost == "" || dbPort == "" || dbName == "" {
+		log.Fatal("Variáveis de ambiente para banco de dados não estão completamente definidas")
 	}
 
-	db.AutoMigrate(&models.Order{}, &models.Product{}) // AutoMigrando modelos
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=UTC",
+		dbHost, dbUser, dbPassword, dbName, dbPort, sslMode,
+	)
 
-	DB = db
-	fmt.Println("Banco conectado e modelos migrados com sucesso!")
+	var err error
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	if err != nil {
+		log.Fatalf("Erro ao conectar ao banco de dados: %v", err)
+	}
+
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatalf("Erro ao obter instância do DB: %v", err)
+	}
+
+	// Configurações do pool de conexões
+	sqlDB.SetMaxOpenConns(20)
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	log.Println("Conexão com o banco de dados estabelecida com sucesso.")
 }

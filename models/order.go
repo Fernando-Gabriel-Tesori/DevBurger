@@ -1,19 +1,13 @@
 package models
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
+import "time"
 
 type Order struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-
-	CustomerName string  `json:"customer_name"`
-	Items        string  `json:"items"` // Pode ser JSON string dos itens
-	TotalPrice   float64 `json:"total_price"`
-	Status       string  `json:"status"`
+	ID        uint        `gorm:"primaryKey"`
+	UserID    uint        `gorm:"not null"`
+	Items     []OrderItem `gorm:"foreignKey:OrderID"`
+	Total     float64     `gorm:"not null"`
+	Status    string      `gorm:"default:'pending'"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

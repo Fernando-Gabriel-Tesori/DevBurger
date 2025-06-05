@@ -9,7 +9,6 @@ COPY . .
 
 RUN go build -o app ./cmd/api
 
-# Etapa 2: imagem final
 FROM gcr.io/distroless/base-debian10
 WORKDIR /app
 COPY --from=builder /app/app .

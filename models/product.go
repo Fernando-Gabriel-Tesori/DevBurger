@@ -1,19 +1,10 @@
 package models
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
-
+// Product representa um produto disponível para venda.
 type Product struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-
+	ID          uint    `gorm:"primaryKey" json:"id"`
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
-	ImageURL    string  `json:"image_url"`
+	Image       string  `json:"image"`
 }
