@@ -1,0 +1,8 @@
+**/*.go
+# **/*.mod    <-- removido para permitir copiar go.mod
+# **/*.sum    <-- removido para permitir copiar go.sum
+**/vendor
+**/bin
+.env
+tests/
+README.md

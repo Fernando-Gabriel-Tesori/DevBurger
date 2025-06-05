@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  devburger-api:
+    build: .
+    container_name: devburger-api
+    depends_on:
+      - postgres
+      - mongodb
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: devburger
+      DB_PASSWORD: secret
+      DB_NAME: devburger
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DB: devburger
+      JWT_SECRET: supertokensecreto
+    networks:
+      - devnet
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: devburger
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: devburger
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - devnet
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - devnet
+
+volumes:
+  pgdata:
+  mongodata:
+
+networks:
+  devnet:
